@@ -2,14 +2,18 @@
 
 ## Project Overview
 This repository contains the implementation of an advanced conversational AI system for the 2021 Mercedes-Benz S-Class. The system leverages the vehicle's MBUX (Mercedes-Benz User Experience) platform and integrates cutting-edge natural language processing capabilities to provide an unparalleled in-car AI assistant experience.
+![image](https://github.com/user-attachments/assets/780bd534-fb6c-492f-80c8-debcf2ba5692)
 
 ## System Architecture
 The AI system is built on a distributed architecture, utilizing both on-board processing and cloud services:
 
 - **On-Board Computing**: NVIDIA Drive AGX Orin SoC
+ ![image](https://github.com/user-attachments/assets/ceec02ca-2fe7-40ae-9e69-967ae1b549de)
+
 - **Cloud Services**: Deepgram ASR, OpenAI GPT-4, Azure Cognitive Services
 - **Connectivity**: Integrated 4G/5G modem
 - **Audio I/O**: Burmester 4D surround sound system, custom microphone array
+![burmester-4d-tweeters229851](https://github.com/user-attachments/assets/2fbd729e-d05d-4618-8185-25b1bf648a26)
 
 ## Key Components
 
