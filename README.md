@@ -79,8 +79,77 @@ Detailed installation instructions are provided in the `INSTALL.md` file, coveri
 ## Usage
 The `docs/` directory contains comprehensive documentation on system usage, API references, and integration guides for extending the AI assistant's capabilities.
 
+## File Structure
+
+```bash
+mercedes_ai/
+├── README.md                      # Project documentation
+├── INSTALL.md                     # Installation instructions
+├── requirements.txt               # Python dependencies
+├── setup.py                       # Package setup
+├── config/
+│   ├── __init__.py
+│   ├── settings.py                # Global configuration
+│   ├── dev_settings.py            # Development settings
+│   └── prod_settings.py           # Production settings
+├── speech_recognition/
+│   ├── __init__.py
+│   ├── asr_client.py              # Deepgram ASR client
+│   ├── audio_processor.py         # Audio preprocessing
+│   └── microphone_manager.py      # Microphone array management
+├── nlu/
+│   ├── __init__.py
+│   ├── intent_classifier.py       # Intent recognition
+│   ├── entity_extractor.py        # Entity extraction
+│   └── context_manager.py         # NLU context management
+├── dialogue/
+│   ├── __init__.py
+│   ├── llm_client.py              # GPT-4 client
+│   ├── conversation_manager.py    # Multi-turn conversation handler
+│   ├── response_generator.py      # Response generation
+│   └── state_handler.py           # Dialogue state tracking
+├── tts/
+│   ├── __init__.py
+│   ├── azure_tts_client.py        # Azure TTS client
+│   ├── audio_output.py            # Sound system interface
+│   └── voice_customization.py     # Custom voice settings
+├── vehicle/
+│   ├── __init__.py
+│   ├── mbux_interface.py          # MBUX API client
+│   ├── can_bus_reader.py          # CAN bus data reader
+│   ├── vehicle_controller.py      # Vehicle systems control
+│   └── sensor_manager.py          # Vehicle sensor data access
+├── context_fusion/
+│   ├── __init__.py
+│   ├── flink_processor.py         # Apache Flink integration
+│   ├── context_aggregator.py      # Real-time context fusion
+│   └── external_api_client.py     # Weather, traffic, etc. APIs
+├── security/
+│   ├── __init__.py
+│   ├── encryption.py              # End-to-end encryption
+│   ├── secure_boot.py             # Secure boot process
+│   └── privacy_manager.py         # Privacy controls
+├── optimization/
+│   ├── __init__.py
+│   ├── tensorrt_wrapper.py        # NVIDIA TensorRT integration
+│   ├── request_prioritizer.py     # Request priority queue
+│   └── compute_allocator.py       # Adaptive compute allocation
+├── tests/
+│   ├── __init__.py
+│   ├── unit/                      # Unit tests
+│   ├── integration/               # Integration tests
+│   ├── hil/                       # Hardware-in-the-Loop tests
+│   └── simulation/                # Simulation environment
+├── deployment/
+│   ├── __init__.py
+│   ├── ota_manager.py             # OTA update system
+│   ├── ab_testing.py              # A/B testing framework
+│   └── telemetry.py               # Telemetry and reporting
+└── main.py                        # Application entry point
+```
+
 ## Contributing
-Please read `CONTRIBUTING.md` for details on our code of conduct and the process for submitting pull requests.
+DM for project private access
 
 ## License
 This project is licensed under the MIT License - see the `LICENSE.md` file for details.
