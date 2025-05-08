@@ -2,96 +2,105 @@
 
 ## Project Overview
 This repository contains the implementation of an advanced conversational AI system for the 2021 Mercedes-Benz S-Class. The system leverages the vehicle's MBUX (Mercedes-Benz User Experience) platform and integrates cutting-edge natural language processing capabilities to provide an unparalleled in-car AI assistant experience.
-![image](https://github.com/user-attachments/assets/780bd534-fb6c-492f-80c8-debcf2ba5692)
 
 ## System Architecture
 The AI system is built on a distributed architecture, utilizing both on-board processing and cloud services:
 
 - **On-Board Computing**: NVIDIA Drive AGX Orin SoC
- ![image](https://github.com/user-attachments/assets/ceec02ca-2fe7-40ae-9e69-967ae1b549de)
-
-- **Cloud Services**: Deepgram ASR, OpenAI GPT-4, Azure Cognitive Services
+- **Cloud Services**: Deepgram ASR, OpenAI GPT-4, ElevenLabs TTS
 - **Connectivity**: Integrated 4G/5G modem
-- **Audio I/O**: Burmester 4D surround sound system, custom microphone array
-![burmester-4d-tweeters229851](https://github.com/user-attachments/assets/2fbd729e-d05d-4618-8185-25b1bf648a26)
+- **Audio I/O**: Burmester 4D surround sound system, custom 4-mic array
 
 ## Key Components
 
 ### 1. Speech Recognition
 - **Hardware**: Custom 4-mic array (Knowles SPH0645LM4H-B MEMS)
 - **Software**: Deepgram ASR with Nova-2 model
-- **Features**: Real-time streaming, noise cancellation, speaker diarization
+- **Features**: 
+  - Real-time streaming
+  - Noise cancellation
+  - Speaker diarization
+  - Audio preprocessing and enhancement
 
 ### 2. Natural Language Understanding (NLU)
 - **Framework**: Custom NLU module built on spaCy
 - **Model**: Fine-tuned on automotive domain data
-- **Capabilities**: Intent recognition, entity extraction, context management
+- **Capabilities**: 
+  - Intent recognition
+  - Entity extraction
+  - Context management
+  - Multi-turn conversation handling
 
 ### 3. Dialogue Management
 - **Core**: OpenAI GPT-4
-- **State Management**: Redis-based context store
-- **Features**: Multi-turn conversations, context retention, personalization
+- **Features**: 
+  - Multi-turn conversations
+  - Context retention
+  - Personalization
+  - Follow-up question generation
+  - Sentiment analysis
 
 ### 4. Text-to-Speech (TTS)
-- **Service**: Azure Cognitive Services Neural TTS
-- **Voice Model**: Custom voice trained for Mercedes-Benz
-- **Integration**: Direct output to Burmester sound system
+- **Service**: ElevenLabs Neural TTS
+- **Features**: 
+  - High-quality voice synthesis
+  - Voice customization
+  - Emotional expression
+  - Real-time streaming
 
 ### 5. Vehicle Integration
 - **Interface**: MBUX API
-- **Data Sources**: CAN bus, GPS, vehicle sensors
-- **Control**: Climate, infotainment, vehicle settings
+- **Data Sources**: 
+  - CAN bus
+  - GPS
+  - Vehicle sensors
+- **Control**: 
+  - Climate control
+  - Infotainment
+  - Navigation
+  - Phone integration
+  - Vehicle settings
 
 ### 6. Context Fusion Engine
-- **Framework**: Apache Flink
-- **Data Sources**: Vehicle telemetry, user history, external APIs (weather, traffic)
-- **Purpose**: Real-time context aggregation for enhanced response relevance
+- **Features**: 
+  - Real-time context aggregation
+  - Multi-source data fusion
+  - State management
+  - Context persistence
 
-## Security and Privacy
-- End-to-end encryption using Noise Protocol Framework
-- Secure boot process leveraging NVIDIA's hardware security modules
-- Privacy-preserving federated learning for model updates
+### 7. Security
+- **Features**: 
+  - End-to-end encryption
+  - JWT authentication
+  - API key management
+  - Secure data storage
+  - HMAC verification
 
-## Performance Optimization
-- NVIDIA TensorRT for on-device inference optimization
-- Custom priority queue for request management
-- Adaptive compute allocation based on query complexity
+### 8. Performance Optimization
+- **Features**: 
+  - Real-time performance monitoring
+  - Anomaly detection
+  - Resource optimization
+  - Metric collection and analysis
+  - Automatic optimization suggestions
 
-## Testing and Validation
-- Comprehensive unit and integration testing suite
-- Hardware-in-the-Loop (HIL) testing using Mercedes-Benz's proprietary infrastructure
-- Simulated environment for edge case testing and AI behavior validation
-
-## Deployment
-- Over-the-Air (OTA) update system for software and model updates
-- A/B testing framework for gradual feature rollout
-- Telemetry and error reporting system for continuous improvement
-
-## Requirements
-- NVIDIA DRIVE SDK
-- Mercedes-Benz MBUX Development Kit
-- Cloud service accounts: Deepgram, OpenAI, Azure
-- Appropriate vehicle diagnostic and development tools
-
-## Installation
-Detailed installation instructions are provided in the `INSTALL.md` file, covering both the vehicle-side setup and the development environment configuration.
-
-## Usage
-The `docs/` directory contains comprehensive documentation on system usage, API references, and integration guides for extending the AI assistant's capabilities.
+### 9. Deployment
+- **Features**: 
+  - Component version management
+  - System health monitoring
+  - Automatic backups
+  - Rollback capability
+  - Docker container management
 
 ## File Structure
 
 ```bash
 mercedes_ai/
 ├── README.md                      # Project documentation
-├── INSTALL.md                     # Installation instructions
-├── requirements.txt               # Python dependencies
-├── setup.py                       # Package setup
+├── main.py                        # Application entry point
 ├── config/
 │   ├── __init__.py
-│   ├── settings.py                # Global configuration
-│   ├── dev_settings.py            # Development settings
-│   └── prod_settings.py           # Production settings
+│   └── settings.py                # Global configuration
 ├── speech_recognition/
 │   ├── __init__.py
 │   ├── asr_client.py              # Deepgram ASR client
@@ -105,48 +114,85 @@ mercedes_ai/
 ├── dialogue/
 │   ├── __init__.py
 │   ├── llm_client.py              # GPT-4 client
-│   ├── conversation_manager.py    # Multi-turn conversation handler
-│   ├── response_generator.py      # Response generation
-│   └── state_handler.py           # Dialogue state tracking
+│   └── dialogue_manager.py        # Dialogue management
 ├── tts/
 │   ├── __init__.py
-│   ├── azure_tts_client.py        # Azure TTS client
-│   ├── audio_output.py            # Sound system interface
-│   └── voice_customization.py     # Custom voice settings
+│   └── tts_client.py              # ElevenLabs TTS client
 ├── vehicle/
 │   ├── __init__.py
-│   ├── mbux_interface.py          # MBUX API client
-│   ├── can_bus_reader.py          # CAN bus data reader
-│   ├── vehicle_controller.py      # Vehicle systems control
-│   └── sensor_manager.py          # Vehicle sensor data access
+│   └── vehicle_controller.py      # Vehicle systems control
 ├── context_fusion/
 │   ├── __init__.py
-│   ├── flink_processor.py         # Apache Flink integration
-│   ├── context_aggregator.py      # Real-time context fusion
-│   └── external_api_client.py     # Weather, traffic, etc. APIs
+│   └── context_fusion.py          # Context fusion engine
 ├── security/
 │   ├── __init__.py
-│   ├── encryption.py              # End-to-end encryption
-│   ├── secure_boot.py             # Secure boot process
-│   └── privacy_manager.py         # Privacy controls
+│   └── security_manager.py        # Security management
 ├── optimization/
 │   ├── __init__.py
-│   ├── tensorrt_wrapper.py        # NVIDIA TensorRT integration
-│   ├── request_prioritizer.py     # Request priority queue
-│   └── compute_allocator.py       # Adaptive compute allocation
-├── tests/
-│   ├── __init__.py
-│   ├── unit/                      # Unit tests
-│   ├── integration/               # Integration tests
-│   ├── hil/                       # Hardware-in-the-Loop tests
-│   └── simulation/                # Simulation environment
-├── deployment/
-│   ├── __init__.py
-│   ├── ota_manager.py             # OTA update system
-│   ├── ab_testing.py              # A/B testing framework
-│   └── telemetry.py               # Telemetry and reporting
-└── main.py                        # Application entry point
+│   └── optimizer.py               # Performance optimization
+└── deployment/
+    ├── __init__.py
+    └── deployment_manager.py      # Deployment management
 ```
+
+## Requirements
+- Python 3.8+
+- NVIDIA DRIVE SDK
+- Mercedes-Benz MBUX Development Kit
+- Cloud service accounts:
+  - Deepgram
+  - OpenAI
+  - ElevenLabs
+- Required Python packages (see requirements.txt):
+  - asyncio
+  - aiohttp
+  - numpy
+  - spacy
+  - openai
+  - sounddevice
+  - psutil
+  - scikit-learn
+  - docker
+  - cryptography
+  - PyJWT
+
+## Installation
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Set up environment variables:
+   ```bash
+   export DEEPGRAM_API_KEY="your_key"
+   export OPENAI_API_KEY="your_key"
+   export ELEVENLABS_API_KEY="your_key"
+   ```
+4. Download required models:
+   ```bash
+   python -m spacy download en_core_web_lg
+   ```
+
+## Usage
+1. Start the AI assistant:
+   ```bash
+   python main.py
+   ```
+2. The system will initialize all components and start listening for voice input
+3. Use voice commands to interact with the system
+4. Press Ctrl+C to gracefully shut down the system
+
+## Security and Privacy
+- All API keys and sensitive data are encrypted at rest
+- Communication with cloud services is encrypted
+- User data is stored locally and can be cleared
+- Regular security audits and updates
+
+## Performance
+- Real-time performance monitoring
+- Automatic optimization of resource usage
+- Anomaly detection for system health
+- Performance metrics collection and analysis
 
 ## Contributing
 DM for project private access
@@ -157,6 +203,6 @@ This project is licensed under the MIT License - see the `LICENSE.md` file for d
 ## Acknowledgments
 - Mercedes-Benz Research and Development
 - NVIDIA Automotive Team
-- OpenAI, Deepgram, and Microsoft Azure Teams
+- OpenAI, Deepgram, and ElevenLabs Teams
 
 For any queries, please contact the Mercedes-Benz AI Systems Team at ai-systems@mercedes-benz.com.

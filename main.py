@@ -1,155 +1,178 @@
 """
-Main entry point for the Mercedes AI system.
+Main application entry point for the Mercedes-Benz S-Class AI Assistant.
 """
-import asyncio
 import logging
-import os
-import sys
+import asyncio
+import signal
+from typing import Dict, Any, Optional
+import json
 from pathlib import Path
 
-# Add the project root to the Python path
-project_root = Path(__file__).resolve().parent
-sys.path.append(str(project_root))
-
 from config import settings
-from speech_recognition.asr_client import DeepgramASRClient
+from speech_recognition.asr_client import ASRClient
+from speech_recognition.audio_processor import AudioProcessor
 from speech_recognition.microphone_manager import MicrophoneManager
 from nlu.intent_classifier import IntentClassifier
 from nlu.entity_extractor import EntityExtractor
 from nlu.context_manager import ContextManager
-from dialogue.llm_client import GPT4Client
-from dialogue.conversation_manager import ConversationManager
-from tts.azure_tts_client import AzureTTSClient
-from vehicle.mbux_interface import MBUXInterface
+from dialogue.llm_client import LLMClient
+from dialogue.dialogue_manager import DialogueManager
+from tts.tts_client import TTSClient
 from vehicle.vehicle_controller import VehicleController
-from context_fusion.context_aggregator import ContextAggregator
-from security.encryption import EncryptionManager
-from optimization.tensorrt_wrapper import TensorRTWrapper
-from deployment.ota_manager import OTAManager
+from context_fusion.context_fusion import ContextFusion
+from security.security_manager import SecurityManager
+from optimization.optimizer import Optimizer
+from deployment.deployment_manager import DeploymentManager
 
 # Configure logging
 logging.basicConfig(
-    level=getattr(logging, settings.LOG_LEVEL),
-    format=settings.LOG_FORMAT,
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(settings.LOG_FILE),
+        logging.FileHandler(settings.LOG_DIR / "app.log"),
         logging.StreamHandler()
     ]
 )
+
 logger = logging.getLogger(__name__)
 
 class MercedesAI:
+    """Main application class for the Mercedes-Benz AI Assistant."""
+    
     def __init__(self):
-        """Initialize the Mercedes AI system components."""
-        logger.info("Initializing Mercedes AI system...")
+        """Initialize the AI assistant."""
+        # Initialize components
+        self.asr_client = ASRClient()
+        self.audio_processor = AudioProcessor()
+        self.microphone_manager = MicrophoneManager()
         
-        # Initialize security
-        self.encryption = EncryptionManager()
-        
-        # Initialize speech components
-        self.microphone = MicrophoneManager()
-        self.asr_client = DeepgramASRClient()
-        
-        # Initialize NLU components
         self.intent_classifier = IntentClassifier()
         self.entity_extractor = EntityExtractor()
         self.context_manager = ContextManager()
         
-        # Initialize dialogue components
-        self.llm_client = GPT4Client()
-        self.conversation_manager = ConversationManager()
+        self.llm_client = LLMClient()
+        self.dialogue_manager = DialogueManager()
         
-        # Initialize TTS
-        self.tts_client = AzureTTSClient()
-        
-        # Initialize vehicle integration
-        self.mbux = MBUXInterface()
+        self.tts_client = TTSClient()
         self.vehicle_controller = VehicleController()
         
-        # Initialize context fusion
-        self.context_aggregator = ContextAggregator()
+        self.context_fusion = ContextFusion()
+        self.security_manager = SecurityManager()
+        self.optimizer = Optimizer()
+        self.deployment_manager = DeploymentManager()
         
-        # Initialize optimization
-        self.tensorrt = TensorRTWrapper()
+        # Application state
+        self._is_running = False
+        self._shutdown_event = asyncio.Event()
         
-        # Initialize deployment
-        self.ota_manager = OTAManager()
-        
-        logger.info("Mercedes AI system initialized successfully")
-
+        logger.info("Mercedes AI Assistant initialized")
+    
     async def start(self):
-        """Start the Mercedes AI system."""
+        """Start the AI assistant."""
         try:
-            logger.info("Starting Mercedes AI system...")
+            self._is_running = True
             
-            # Start OTA update checker
-            asyncio.create_task(self.ota_manager.start_update_checker())
+            # Start components
+            await self.microphone_manager.start()
+            await self.tts_client.connect()
             
-            # Start context fusion
-            asyncio.create_task(self.context_aggregator.start())
+            # Start main processing loop
+            await self._main_loop()
             
-            # Start the main conversation loop
-            while True:
-                try:
-                    # Get audio input
-                    audio_data = await self.microphone.get_audio()
+        except Exception as e:
+            logger.error(f"Error starting AI assistant: {str(e)}")
+            await self.stop()
+    
+    async def stop(self):
+        """Stop the AI assistant."""
+        try:
+            self._is_running = False
+            self._shutdown_event.set()
+            
+            # Stop components
+            await self.microphone_manager.stop()
+            await self.tts_client.stop()
+            
+            logger.info("AI assistant stopped")
+            
+        except Exception as e:
+            logger.error(f"Error stopping AI assistant: {str(e)}")
+    
+    async def _main_loop(self):
+        """Main processing loop."""
+        while self._is_running and not self._shutdown_event.is_set():
+            try:
+                # Get audio input
+                audio_data = await self.microphone_manager.get_audio()
+                
+                # Process audio
+                processed_audio = self.audio_processor.process(audio_data)
+                
+                # Convert speech to text
+                text = await self.asr_client.transcribe(processed_audio)
+                
+                if text:
+                    # Get vehicle state
+                    vehicle_state = await self.vehicle_controller.get_state()
                     
-                    # Process speech to text
-                    text = await self.asr_client.transcribe(audio_data)
-                    
-                    # Process NLU
-                    intent = await self.intent_classifier.classify(text)
-                    entities = await self.entity_extractor.extract(text)
-                    
-                    # Get context
-                    context = await self.context_manager.get_context()
-                    
-                    # Generate response
-                    response = await self.conversation_manager.generate_response(
-                        text, intent, entities, context
+                    # Process input
+                    response = await self.dialogue_manager.process_input(
+                        text,
+                        vehicle_state
                     )
                     
-                    # Convert response to speech
-                    audio_response = await self.tts_client.synthesize(response)
+                    # Update context
+                    await self.context_fusion.fuse_contexts(
+                        await self.context_manager.get_context(),
+                        vehicle_state,
+                        await self.context_manager.get_user_context(),
+                        {"status": "active"}
+                    )
+                    
+                    # Generate speech
+                    audio = await self.tts_client.synthesize(response["text"])
                     
                     # Play response
-                    await self.microphone.play_audio(audio_response)
+                    await self.microphone_manager.play_audio(audio)
                     
-                except Exception as e:
-                    logger.error(f"Error in conversation loop: {str(e)}")
-                    continue
+                    # Record metrics
+                    await self.optimizer.record_metric(
+                        "application",
+                        "response_time",
+                        response.get("processing_time", 0.0)
+                    )
                 
-        except Exception as e:
-            logger.error(f"Fatal error in Mercedes AI system: {str(e)}")
-            raise
-
-    async def shutdown(self):
-        """Gracefully shutdown the Mercedes AI system."""
-        logger.info("Shutting down Mercedes AI system...")
-        
-        # Stop all components
-        await self.microphone.stop()
-        await self.asr_client.stop()
-        await self.context_aggregator.stop()
-        await self.ota_manager.stop()
-        
-        logger.info("Mercedes AI system shut down successfully")
+                # Check system health
+                health_status = await self.deployment_manager.check_health()
+                if health_status["status"] != "healthy":
+                    logger.warning(f"System health check failed: {health_status}")
+                
+                # Optimize performance if needed
+                optimization_result = await self.optimizer.optimize_performance()
+                if optimization_result["suggestions"]:
+                    logger.info(f"Performance optimization suggestions: {optimization_result['suggestions']}")
+                
+            except Exception as e:
+                logger.error(f"Error in main loop: {str(e)}")
+                await asyncio.sleep(1)  # Prevent tight loop on error
+    
+    def _setup_signal_handlers(self):
+        """Set up signal handlers for graceful shutdown."""
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            signal.signal(sig, lambda s, f: asyncio.create_task(self.stop()))
 
 async def main():
     """Main entry point."""
-    mercedes_ai = MercedesAI()
+    # Create and start AI assistant
+    ai = MercedesAI()
+    ai._setup_signal_handlers()
     
     try:
-        await mercedes_ai.start()
+        await ai.start()
     except KeyboardInterrupt:
         logger.info("Received shutdown signal")
     finally:
-        await mercedes_ai.shutdown()
+        await ai.stop()
 
 if __name__ == "__main__":
-    # Set up asyncio event loop
-    if sys.platform == 'win32':
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
-    # Run the main function
     asyncio.run(main()) 
