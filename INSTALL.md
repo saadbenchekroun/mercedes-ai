@@ -21,7 +21,7 @@ This guide provides detailed instructions for setting up the Mercedes AI system 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/mercedes-benz/mercedes-ai.git
+git clone https://github.com/saadbenchekroun/mercedes-ai.git
 cd mercedes-ai
 ```
 
@@ -185,8 +185,8 @@ alsamixer
 
 For additional support:
 - Check the [documentation](docs/)
-- Contact the Mercedes-Benz AI Systems Team at ai-systems@mercedes-benz.com
-- Submit an issue on the [GitHub repository](https://github.com/mercedes-benz/mercedes-ai/issues)
+- Contact me at saadbenchekrun@gmail.com
+- Submit an issue on the [GitHub repository](https://github.com/saadbenchekroun/mercedes-ai/issues)
 
 ## Security Considerations
 
