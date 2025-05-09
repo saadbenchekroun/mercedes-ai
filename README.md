@@ -205,4 +205,4 @@ This project is licensed under the MIT License - see the `LICENSE.md` file for d
 - NVIDIA Automotive Team
 - OpenAI, Deepgram, and ElevenLabs Teams
 
-For any queries, please contact the Mercedes-Benz AI Systems Team at ai-systems@mercedes-benz.com.
+For any queries, please contact me at saadbenchekrun@gmail.com
