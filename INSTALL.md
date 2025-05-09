@@ -67,7 +67,7 @@ sudo apt-get install -y python3.8 python3.8-venv python3.8-dev
 
 2. Clone the repository:
 ```bash
-git clone https://github.com/mercedes-benz/mercedes-ai.git
+git clone https://github.com/saadbenchekroun/mercedes-ai.git
 cd mercedes-ai
 ```
 
